@@ -38,12 +38,15 @@ source /etc/profile
 ```
 The difference is only in BuildExampleTopo function.  
 ## Trace  
+The code in dqc/model/dqc_trace.cc is used to collect send rate (E_DQC_BW),  
+one way delay (E_DQC_OWD), raceived rate (E_DQC_GOODPUT).  
 In bbr-var-eva-3.30.cc, the enable trace flag is:   
 ```
-trace1.Log(log,DqcTraceEnable::E_DQC_OWD|DqcTraceEnable::E_DQC_BW);  
+trace1.Log(log,DqcTraceEnable::E_DQC_OWD|DqcTraceEnable::E_DQC_BW|DqcTraceEnable::E_DQC_GOODPUT);  
 ```
-DqcTrace will trace onw way tranmission delay once flag E_DQC_OWD is enabled,  
-and the callback function is registered in InstallDqc function.  
+The E_DQC_OWD will create file to collect data.   
+The callback function (DqcTrace::OnOwd) is registered 
+in InstallDqc function to write data to file.  
 ```
 recvApp->SetOwdTraceFuc(MakeCallback(&DqcTrace::OnOwd,trace));  
 ```
