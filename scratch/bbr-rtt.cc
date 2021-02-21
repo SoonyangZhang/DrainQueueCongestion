@@ -274,10 +274,6 @@ void ns3_rtt(int ins,std::string algo,DqcTraceState *stat,int sim_time=200,int l
     }else if(algo.compare("tsu")==0){
         cc=kTsunami;
     }
-    //no use
-    CongestionControlManager cong_ops_manager;
-    RegisterCCManager(&cong_ops_manager);
-    
     uint32_t max_bps=0;
     int test_pair=1;
     uint32_t sender_id=1;
