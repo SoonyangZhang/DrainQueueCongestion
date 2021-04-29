@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <dirent.h>
 #include <memory.h>
 #include "ns3/dqc_trace.h"
 #include "ns3/simulator.h"
@@ -9,81 +10,73 @@ DqcTrace::~DqcTrace(){
     Close();
 }
 void DqcTrace::Log(std::string name,uint8_t enable){
-	if(enable&E_DQC_OWD){
-		OpenOwdFile(name);
-	}
-	if(enable&E_DQC_RTT){
-		OpenRttFile(name);
-	}
-	if(enable&E_DQC_BW){
-		OpenBandwidthFile(name);
-	}
-	if(enable&E_DQC_GOODPUT){
-		OpenGoodputFile(name);
-	}
+    if(enable&E_DQC_OWD){
+        OpenOwdFile(name);
+    }
+    if(enable&E_DQC_RTT){
+        OpenRttFile(name);
+    }
+    if(enable&E_DQC_BW){
+        OpenBandwidthFile(name);
+    }
+    if(enable&E_DQC_GOODPUT){
+        OpenGoodputFile(name);
+    }
     if(enable&E_DQC_STAT){
         OpenStatsFile(name);
     }
 }
 void DqcTrace::OpenOwdFile(std::string name){
-	char buf[FILENAME_MAX];
-	memset(buf,0,FILENAME_MAX);
-	std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
-			+name+"_owd.txt";
-	m_owd.open(path.c_str(), std::fstream::out);    
+    char buf[FILENAME_MAX];
+    memset(buf,0,FILENAME_MAX);
+    std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
+            +name+"_owd.txt";
+    m_owd.open(path.c_str(), std::fstream::out);    
 }
 void DqcTrace::OpenRttFile(std::string name){
-	char buf[FILENAME_MAX];
-	memset(buf,0,FILENAME_MAX);
-	std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
-			+name+"_rtt.txt";
-	m_rtt.open(path.c_str(), std::fstream::out);    
+    char buf[FILENAME_MAX];
+    memset(buf,0,FILENAME_MAX);
+    std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
+            +name+"_rtt.txt";
+    m_rtt.open(path.c_str(), std::fstream::out);    
 }
 void DqcTrace::OpenBandwidthFile(std::string name){
-	char buf[FILENAME_MAX];
-	memset(buf,0,FILENAME_MAX);
-	std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
-			+name+"_bw.txt";
-	m_bw.open(path.c_str(), std::fstream::out);     
+    char buf[FILENAME_MAX];
+    memset(buf,0,FILENAME_MAX);
+    std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
+            +name+"_bw.txt";
+    m_bw.open(path.c_str(), std::fstream::out);     
 }
 void DqcTrace::OpenGoodputFile(std::string name){
-	char buf[FILENAME_MAX];
-	memset(buf,0,FILENAME_MAX);
-	std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
-			+name+"_good.txt";
-	m_googput.open(path.c_str(), std::fstream::out);  	
+    char buf[FILENAME_MAX];
+    memset(buf,0,FILENAME_MAX);
+    std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
+            +name+"_good.txt";
+    m_googput.open(path.c_str(), std::fstream::out);  	
 }
 void DqcTrace::OpenStatsFile(std::string name){
-	char buf[FILENAME_MAX];
-	memset(buf,0,FILENAME_MAX);
-	std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
-			+name+"_stats.txt";
-	m_stats.open(path.c_str(), std::fstream::out);    
+    char buf[FILENAME_MAX];
+    memset(buf,0,FILENAME_MAX);
+    std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
+            +name+"_stats.txt";
+    m_stats.open(path.c_str(), std::fstream::out);    
 }
 void DqcTrace::OnOwd(uint32_t seq,uint32_t owd,uint32_t size){
-	if(m_owd.is_open()){
-        char line [256];
-        memset(line,0,256);
-		float now=Simulator::Now().GetSeconds();
-        sprintf (line, "%f %16d %16d %16d",
-                now,seq,owd,size);
-		m_owd<<line<<std::endl;
-	}    
+    if(m_owd.is_open()){
+        float now=Simulator::Now().GetSeconds();
+        m_owd<<now<<"\t"<<seq<<"\t"<<owd<<"\t"<<size<<std::endl;
+    }    
 }
 void DqcTrace::OnRtt(uint32_t seq,uint32_t rtt){
-	if(m_rtt.is_open()){
-		float now=Simulator::Now().GetSeconds();
-		m_rtt<<now<<"\t"<<seq<<"\t"<<rtt<<std::endl;
-	}    
+    if(m_rtt.is_open()){
+        float now=Simulator::Now().GetSeconds();
+        m_rtt<<now<<"\t"<<seq<<"\t"<<rtt<<std::endl;
+    }    
 }
 void DqcTrace::OnBw(int32_t kbps){
     if(m_bw.is_open()){
-        char line [256];
-        memset(line,0,256);
         float now=Simulator::Now().GetSeconds();
-        sprintf (line, "%f %16d",
-                now,kbps);
-        m_bw<<line<<std::endl;
+        m_bw<<now<<"\t"<<kbps<<std::endl;
     }       
     
 }
@@ -143,11 +136,11 @@ void DqcTrace::CloseStatsFile(){
     }
 }
 DqcTraceState::DqcTraceState(std::string name){
-	char buf[FILENAME_MAX];
-	memset(buf,0,FILENAME_MAX);
-	std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
-			+name+"_all_stats.txt";
-	m_stats.open(path.c_str(), std::fstream::out);     
+    char buf[FILENAME_MAX];
+    memset(buf,0,FILENAME_MAX);
+    std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
+            +name+"_all_stats.txt";
+    m_stats.open(path.c_str(), std::fstream::out);     
 }
 DqcTraceState::~DqcTraceState(){
     if(m_stats.is_open()){
@@ -191,21 +184,16 @@ void DqcTraceState::Flush(uint32_t capacity,uint32_t simulation_time){
         delay=1.0*m_sumDelay/m_delayCount;
     }
     if(m_stats.is_open()){
-        char line [256];
-        memset(line,0,256);
-        sprintf (line, "%d %16f %16f %16f %16f %16f",
-                m_count,(float)loss_rate,(float)average_rate,
-                (float)delay,(float)util,(float)ratio);
-        m_stats<<line<<std::endl;        
+        m_stats<<m_count<<"\t"<<(float)loss_rate<<"\t"
+        <<(float)average_rate<<"\t"<<(float)delay<<"\t"
+        <<(float)util<<"\t"<<(float)ratio<<"\t"
+        <<std::endl; 
     }
     Reset();
 }
 void DqcTraceState::RecordRuningTime(float millis,float mimutes){
     if(m_stats.is_open()){
-        char line [256];
-        memset(line,0,256);
-        sprintf (line, "%f %16f",millis,mimutes);
-        m_stats<<line<<std::endl;
+        m_stats<<millis<<"\t"<<mimutes<<std::endl;
     }
 }
 void DqcTraceState::ReisterAvgDelayId(uint32_t id){

@@ -9,6 +9,7 @@
 #include "flag_util_impl.h"
 #include "logging.h"
 #include "random.h"
+#include "dqc_cc_param_config.h"
 #include "ns3/log.h"
 using namespace ns3;
 namespace dqc{
@@ -18,7 +19,7 @@ namespace {
 const QuicPacketCount kMaxResumptionCongestionWindow = 200;
 // Constants based on TCP defaults.
 const QuicByteCount kMaxBurstBytes = 3 * kDefaultTCPMSS;
-const float kRateBeta = 0.9f; 
+static volatile float kRateBeta = 0.9f; 
 const float kRenoBeta = 0.5f;
 const TimeDelta kMinRttExpiry = TimeDelta::FromMilliseconds(10000);
 const QuicByteCount kDefaultMinimumCongestionWindow = 4* kDefaultTCPMSS;
@@ -29,12 +30,24 @@ const float kSimilarMinRttThreshold = 1.125;
 const float kStartupGrowthTarget = 1.5;
 const float kStartupAfterLossGain = 1.5f;
 const QuicRoundTripCount kRoundTripsWithoutGrowthBeforeExitingStartup = 3;
-const float kLatencyFactor=0.8;
+static volatile float kLatencyFactor=0.8;
 const QuicRoundTripCount kMaxRttObservationWindow=20;
 const uint32_t kActionTable[kActionTableSize]={1,2,3,4,5};
 const double kLearningRate=0.3;
 const float kRewardAlpha=0.85;
 const float kRewardOneMinusAlpha=1-kRewardAlpha;
+}
+void set_learningcc_latency_factor(float value){
+    kLatencyFactor=value;
+}
+float get_learningcc_latency_factor(){
+    return kLatencyFactor;
+}
+void set_learningcc_backoff_factor(float value){
+    kRateBeta=value;
+}
+float get_learningcc_backoff_factor(){
+    return kRateBeta;
 }
 ActionTrace* ActionTrace::Instance(){
     static ActionTrace * const ins=new ActionTrace();
