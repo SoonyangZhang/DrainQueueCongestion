@@ -19,7 +19,7 @@ namespace {
 const QuicPacketCount kMaxResumptionCongestionWindow = 200;
 // Constants based on TCP defaults.
 const QuicByteCount kMaxBurstBytes = 3 * kDefaultTCPMSS;
-static volatile float kRateBeta = 0.9f; 
+float kRateBeta = 0.9f; 
 const float kRenoBeta = 0.5f;
 const TimeDelta kMinRttExpiry = TimeDelta::FromMilliseconds(10000);
 const QuicByteCount kDefaultMinimumCongestionWindow = 4* kDefaultTCPMSS;
@@ -30,7 +30,7 @@ const float kSimilarMinRttThreshold = 1.125;
 const float kStartupGrowthTarget = 1.5;
 const float kStartupAfterLossGain = 1.5f;
 const QuicRoundTripCount kRoundTripsWithoutGrowthBeforeExitingStartup = 3;
-static volatile float kLatencyFactor=0.8;
+float kLatencyFactor=0.8;
 const QuicRoundTripCount kMaxRttObservationWindow=20;
 const uint32_t kActionTable[kActionTableSize]={1,2,3,4,5};
 const double kLearningRate=0.3;
@@ -65,11 +65,11 @@ void ActionTrace::RecordAction(uint32_t millis,uint32_t cid,uint32_t action){
     }
 }
 ActionTrace::ActionTrace(){
-	char buf[FILENAME_MAX];
+	/*char buf[FILENAME_MAX];
 	memset(buf,0,FILENAME_MAX);
 	std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
 			+"learning_act.txt";
-	traces_.open(path.c_str(), std::fstream::out);    
+	traces_.open(path.c_str(), std::fstream::out);*/   
 }
 ActionTrace::~ActionTrace(){
     

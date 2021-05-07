@@ -1,10 +1,15 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <memory.h>
+#include <string>
 #include "ns3/dqc_trace.h"
 #include "ns3/simulator.h"
 //app http://www.cplusplus.com/reference/fstream/fstream/open/
 namespace ns3{
+std::string kDqcTracePath;
+void set_dqc_trace_folder(std::string &path){
+    kDqcTracePath=path;
+}
 DqcTrace::DqcTrace(int id):m_id(id){}
 DqcTrace::~DqcTrace(){
     Close();
@@ -29,36 +34,63 @@ void DqcTrace::Log(std::string name,uint8_t enable){
 void DqcTrace::OpenOwdFile(std::string name){
     char buf[FILENAME_MAX];
     memset(buf,0,FILENAME_MAX);
-    std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
+    std::string path;
+    if(0==kDqcTracePath.size()){
+        path= std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
             +name+"_owd.txt";
+    }else{
+        path=std::string(kDqcTracePath)+name+"_owd.txt";
+    }
     m_owd.open(path.c_str(), std::fstream::out);    
 }
 void DqcTrace::OpenRttFile(std::string name){
     char buf[FILENAME_MAX];
     memset(buf,0,FILENAME_MAX);
-    std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
+    std::string path;
+    if(0==kDqcTracePath.size()){
+        path= std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
             +name+"_rtt.txt";
+    }else{
+        path=std::string(kDqcTracePath)+name+"_rtt.txt";
+    }
+
     m_rtt.open(path.c_str(), std::fstream::out);    
 }
 void DqcTrace::OpenBandwidthFile(std::string name){
     char buf[FILENAME_MAX];
     memset(buf,0,FILENAME_MAX);
-    std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
-            +name+"_bw.txt";
+    std::string path;
+    if(0==kDqcTracePath.size()){
+        path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
+                +name+"_bw.txt";
+    }else{
+        path=std::string(kDqcTracePath)+name+"_bw.txt";
+    }
     m_bw.open(path.c_str(), std::fstream::out);     
 }
 void DqcTrace::OpenGoodputFile(std::string name){
     char buf[FILENAME_MAX];
     memset(buf,0,FILENAME_MAX);
-    std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
+    std::string path;
+    if(0==kDqcTracePath.size()){
+        path=std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
             +name+"_good.txt";
+    }else{
+        path=std::string(kDqcTracePath)+name+"_good.txt";
+    }
     m_googput.open(path.c_str(), std::fstream::out);  	
 }
 void DqcTrace::OpenStatsFile(std::string name){
     char buf[FILENAME_MAX];
     memset(buf,0,FILENAME_MAX);
-    std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
+    std::string path;
+    if(0==kDqcTracePath.size()){
+        path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
             +name+"_stats.txt";
+    }else{
+        path=std::string(kDqcTracePath)+name+"_stats.txt";
+    }
+
     m_stats.open(path.c_str(), std::fstream::out);    
 }
 void DqcTrace::OnOwd(uint32_t seq,uint32_t owd,uint32_t size){
@@ -110,14 +142,14 @@ void DqcTrace::Close(){
     CloseStatsFile();
 }
 void DqcTrace::CloseOwdFile(){
-	if(m_owd.is_open()){
-		m_owd.close();
-	}    
+    if(m_owd.is_open()){
+        m_owd.close();
+    }    
 }
 void DqcTrace::CloseRttFile(){
-	if(m_rtt.is_open()){
-		m_rtt.close();
-	}    
+    if(m_rtt.is_open()){
+        m_rtt.close();
+    }    
 }
 void DqcTrace::CloseBandwidthFile(){
     if(m_bw.is_open()){
@@ -138,8 +170,13 @@ void DqcTrace::CloseStatsFile(){
 DqcTraceState::DqcTraceState(std::string name){
     char buf[FILENAME_MAX];
     memset(buf,0,FILENAME_MAX);
-    std::string path = std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
+    std::string path;
+    if(0==kDqcTracePath.size()){
+        path=std::string (getcwd(buf, FILENAME_MAX)) + "/traces/"
             +name+"_all_stats.txt";
+    }else{
+        path=std::string(kDqcTracePath)+name+"_all_stats.txt";
+    }
     m_stats.open(path.c_str(), std::fstream::out);     
 }
 DqcTraceState::~DqcTraceState(){
